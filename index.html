@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>普宁潮实CSTV校园广播站点歌台</title>
+    <!-- 创意字体引入 -->
+    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: background 0.2s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background-size: cover !important;
+            background-position: center center !important;
+            background-repeat: no-repeat !important;
+            background-attachment: fixed !important;
+        }
+
+        /* 主卡片 - 半透磨砂质感保证文字可读 */
+        .container {
+            max-width: 650px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 48px 32px 48px 32px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            backdrop-filter: blur(2px);
+            transition: all 0.2s;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* 创意标题区 - 背景微透但保证白色标题突出 */
+        .title-area {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 32px 20px 24px;
+            text-align: center;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.7);
+            position: relative;
+        }
+        
+        /* 标题改为纯白 + 强阴影 + 光效，确保醒目 */
+        .cstv-title {
+            font-family: 'ZCOOL KuaiLe', cursive;
+            font-size: 2.4rem;
+            font-weight: bold;
+            color: #FFFFFF !important;
+            background: none !important;
+            -webkit-background-clip: unset;
+            background-clip: unset;
+            text-shadow: 4px 4px 12px rgba(0, 0, 0, 0.7), 0 0 8px rgba(255, 215, 0, 0.9);
+            letter-spacing: 2px;
+            word-break: keep-all;
+            display: inline-block;
+            padding: 0 8px;
+        }
+        
+        /* 添加麦克风和耳机装饰 */
+        .cstv-title::after {
+            content: "🎙️";
+            font-size: 2rem;
+            margin-left: 10px;
+            background: none;
+            text-shadow: 0 0 5px gold;
+            color: white;
+        }
+        
+        .cstv-title::before {
+            content: "🎧";
+            font-size: 2rem;
+            margin-right: 10px;
+            background: none;
+            text-shadow: 0 0 5px gold;
+            color: white;
+        }
+
+        .sub {
+            font-size: 0.85rem;
+            background: #1e1e2fcc;
+            display: inline-block;
+            padding: 5px 14px;
+            border-radius: 40px;
+            color: #FFF3cf;
+            margin-top: 12px;
+            font-weight: 500;
+            backdrop-filter: blur(4px);
+        }
+
+        /* 点歌表单 */
+        .song-form {
+            padding: 28px 24px 24px;
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #1a202c;
+            font-size: 1rem;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px 18px;
+            font-size: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 60px;
+            transition: 0.2s;
+            background: white;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .input-group input:focus {
+            border-color: #f39c12;
+            box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.2);
+        }
+
+        .btn-point {
+            width: 100%;
+            background: linear-gradient(95deg, #ff9a3c, #ff4d6d);
+            border: none;
+            padding: 14px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            border-radius: 60px;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.1s, box-shadow 0.2s;
+            box-shadow: 0 8px 14px rgba(0,0,0,0.2);
+            font-family: inherit;
+        }
+
+        .btn-point:active {
+            transform: scale(0.97);
+        }
+
+        .btn-point:disabled {
+            background: #b0a0b0;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .status-badge {
+            text-align: center;
+            margin-top: 15px;
+            font-weight: bold;
+            padding: 8px;
+            border-radius: 40px;
+            background: #f0f0f0;
+            color: #2c3e66;
+            font-size: 0.9rem;
+        }
+
+        /* 管理员面板 */
+        .admin-login-area {
+            padding: 0 24px 20px;
+            border-top: 1px solid #ecf0f1;
+            margin-top: 0;
+        }
+
+        .admin-toggle {
+            background: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 60px;
+            padding: 8px 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            margin-bottom: 12px;
+            transition: 0.2s;
+        }
+
+        .admin-panel {
+            background: #f8f9fc;
+            border-radius: 32px;
+            padding: 18px;
+            margin-top: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .admin-panel h4 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+            border-left: 5px solid #e67e22;
+            padding-left: 12px;
+        }
+
+        .bg-control {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .bg-control input {
+            flex: 1;
+            padding: 8px 12px;
+            border-radius: 40px;
+            border: 1px solid #ccc;
+        }
+
+        .bg-control button {
+            background: #3498db;
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 40px;
+            cursor: pointer;
+        }
+        
+        /* 图片上传区域 */
+        .bg-image-upload {
+            background: #edf2f7;
+            border-radius: 28px;
+            padding: 12px 15px;
+            margin: 15px 0;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .bg-image-upload label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #2d3748;
+        }
+        
+        .bg-image-upload input {
+            flex: 2;
+            padding: 6px;
+            border-radius: 40px;
+            border: 1px solid #ccc;
+            background: white;
+        }
+        
+        .bg-image-upload button {
+            background: #9b59b6;
+            border: none;
+            color: white;
+            padding: 6px 18px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+        
+        .bg-image-upload small {
+            width: 100%;
+            font-size: 0.65rem;
+            color: #555;
+            margin-top: 5px;
+        }
+
+        .switch-btn {
+            background: #e67e22;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 60px;
+            font-weight: bold;
+            margin-right: 12px;
+            cursor: pointer;
+        }
+
+        .logout-btn {
+            background: #95a5a6;
+            margin-top: 10px;
+        }
+
+        /* 页脚 */
+        .footer {
+            background: #1e1e2f;
+            color: #bbb;
+            text-align: center;
+            padding: 16px 12px;
+            font-size: 0.7rem;
+            border-top: 1px solid #444;
+            font-family: monospace;
+        }
+
+        .footer div {
+            margin: 4px 0;
+        }
+
+        /* 弹窗提示 */
+        .toast-msg {
+            position: fixed;
+            bottom: 30%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333c;
+            backdrop-filter: blur(12px);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 60px;
+            font-size: 1rem;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            pointer-events: none;
+            font-weight: 500;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        input:disabled {
+            background-color: #f5f5f5;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="appContainer">
+    <div class="title-area">
+        <div class="cstv-title">普宁潮实CSTV校园广播站点歌台</div>
+        <div class="sub">—— 用心点歌 传递温暖 ——</div>
+    </div>
+
+    <div class="song-form">
+        <div class="input-group">
+            <label>🎵 歌曲名称</label>
+            <input type="text" id="songName" placeholder="例: 晴天" maxlength="50">
+        </div>
+        <div class="input-group">
+            <label>🎤 歌手名字</label>
+            <input type="text" id="singerName" placeholder="例: 周杰伦" maxlength="50">
+        </div>
+        <button class="btn-point" id="pointBtn">✨ 点 歌 ✨</button>
+        <div class="status-badge" id="globalStatusMsg">🎙️ 点歌台状态：<span id="openCloseText">开启中</span></div>
+    </div>
+
+    <div class="admin-login-area">
+        <button class="admin-toggle" id="adminToggleBtn">🔐 管理员登录</button>
+        <div id="adminPanelWrapper" style="display: none;">
+            <div class="admin-panel">
+                <h4>🛠️ 管理控制台</h4>
+                <div class="bg-control">
+                    <input type="color" id="bgColorPicker" value="#667eea">
+                    <button id="applyBgColorBtn">🎨 更改背景色</button>
+                    <button id="resetBgBtn" style="background:#7f8c8d;">🔄 重置背景</button>
+                </div>
+                <!-- 上传图片背景区域 -->
+                <div class="bg-image-upload">
+                    <label>🖼️ 上传图片背景</label>
+                    <input type="file" id="bgImageUpload" accept="image/jpeg,image/png,image/webp">
+                    <button id="uploadBgImageBtn">📤 应用图片</button>
+                    <small>支持 JPG/PNG/WEBP，建议≤2MB，背景自动铺满固定</small>
+                </div>
+                <div style="margin: 15px 0;">
+                    <button id="togglePointStatusBtn" class="switch-btn">⏸️ 暂停点歌台</button>
+                    <span style="font-size:0.8rem; color:#4a5568;">点击可开启/暂停（关闭后开启重置点歌限制）</span>
+                </div>
+                <button id="adminLogoutBtn" class="switch-btn logout-btn">🚪 退出管理</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div>开发：Xudata.绪白信息社</div>
+        <div>如问题请联系开发者：郑杰文</div>
+        <div>版本号：20260524Ver3.8.8    最终解释权归绪白信息社所有</div>
+    </div>
+</div>
+
+<script>
+    /*************** 全局配置 ***************/
+    const STORAGE_IS_OPEN = "cstv_point_isOpen";
+    const STORAGE_ROUND_ID = "cstv_point_roundId";
+    const STORAGE_BG_STYLE = "cstv_bg_style";   // 存储背景样式字符串 (颜色/渐变/图片背景)
+    
+    // 设备唯一存储
+    const DEVICE_ROUND_KEY = "cstv_device_roundId";
+    const DEVICE_HAS_POSTED_KEY = "cstv_device_hasPosted";
+
+    // API
+    const API_URL = "https://quickform.cn/api/83zix60grc";
+
+    // DOM
+    const songInput = document.getElementById('songName');
+    const singerInput = document.getElementById('singerName');
+    const pointBtn = document.getElementById('pointBtn');
+    const openCloseSpan = document.getElementById('openCloseText');
+    const adminToggleBtn = document.getElementById('adminToggleBtn');
+    const adminPanelWrapper = document.getElementById('adminPanelWrapper');
+    const togglePointStatusBtn = document.getElementById('togglePointStatusBtn');
+    const adminLogoutBtn = document.getElementById('adminLogoutBtn');
+    const bgColorPicker = document.getElementById('bgColorPicker');
+    const applyBgColorBtn = document.getElementById('applyBgColorBtn');
+    const resetBgBtn = document.getElementById('resetBgBtn');
+    const bgImageUpload = document.getElementById('bgImageUpload');
+    const uploadBgImageBtn = document.getElementById('uploadBgImageBtn');
+
+    // 状态变量
+    let isAdminLogged = false;
+    let pointOpen = true;
+    let currentRoundId = "";
+
+    // ---------- 辅助函数 ----------
+    function generateRoundId() {
+        return Date.now() + '-' + Math.random().toString(36).substr(2, 10);
+    }
+
+    function showToast(msg, duration = 2200) {
+        let toast = document.querySelector('.toast-msg');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.className = 'toast-msg';
+            document.body.appendChild(toast);
+        }
+        toast.innerText = msg;
+        toast.style.opacity = '1';
+        clearTimeout(window.toastTimer);
+        window.toastTimer = setTimeout(() => {
+            toast.style.opacity = '0';
+        }, duration);
+    }
+
+    // 更新前端点歌台UI文字
+    function updateOpenCloseUI() {
+        if (pointOpen) {
+            openCloseSpan.innerText = "开启中 🎶";
+            openCloseSpan.style.color = "#2ecc71";
+            document.getElementById('globalStatusMsg').style.background = "#e8f5e9";
+        } else {
+            openCloseSpan.innerText = "已暂停 ❌";
+            openCloseSpan.style.color = "#e74c3c";
+            document.getElementById('globalStatusMsg').style.background = "#ffeaea";
+        }
+    }
+
+    // 设备点歌许可同步 (基于全局round)
+    function syncDevicePermissionByRound() {
+        let deviceRound = localStorage.getItem(DEVICE_ROUND_KEY);
+        let currentGlobalRound = localStorage.getItem(STORAGE_ROUND_ID);
+        if (!currentGlobalRound) return;
+        if (deviceRound !== currentGlobalRound) {
+            localStorage.setItem(DEVICE_HAS_POSTED_KEY, "false");
+            localStorage.setItem(DEVICE_ROUND_KEY, currentGlobalRound);
+        } else {
+            if (localStorage.getItem(DEVICE_HAS_POSTED_KEY) === null) {
+                localStorage.setItem(DEVICE_HAS_POSTED_KEY, "false");
+            }
+        }
+    }
+
+    function hasDevicePostedInThisRound() {
+        syncDevicePermissionByRound();
+        return localStorage.getItem(DEVICE_HAS_POSTED_KEY) === "true";
+    }
+
+    function setDevicePosted() {
+        localStorage.setItem(DEVICE_HAS_POSTED_KEY, "true");
+        let curGlobalRound = localStorage.getItem(STORAGE_ROUND_ID);
+        if (curGlobalRound) {
+            localStorage.setItem(DEVICE_ROUND_KEY, curGlobalRound);
+        }
+    }
+
+    // 重置全局轮次 (关闭->开启或管理员强制重置)
+    function resetGlobalRoundAndClearDevices() {
+        const newRoundId = generateRoundId();
+        localStorage.setItem(STORAGE_ROUND_ID, newRoundId);
+        currentRoundId = newRoundId;
+        localStorage.setItem(DEVICE_HAS_POSTED_KEY, "false");
+        localStorage.setItem(DEVICE_ROUND_KEY, newRoundId);
+        // 触发同源其他页面更新
+        window.dispatchEvent(new StorageEvent('storage', {
+            key: STORAGE_ROUND_ID,
+            newValue: newRoundId,
+            oldValue: currentRoundId,
+            storageArea: localStorage
+        }));
+        showToast("🔄 点歌台已重置，每台设备可重新点歌", 1800);
+    }
+
+    // 管理员开启点歌台 + 重置所有设备限制
+    function adminEnableAndReset() {
+        if (!pointOpen) {
+            pointOpen = true;
+            localStorage.setItem(STORAGE_IS_OPEN, "true");
+            resetGlobalRoundAndClearDevices();
+            updateOpenCloseUI();
+            if (isAdminLogged) updateAdminButtonText();
+            showToast("✅ 点歌台已开启，且所有设备点歌次数已重置", 2000);
+        } else {
+            // 已经是开启状态 如果愿意也可手动重置轮次 (附加功能：为方便，提供一个选项？但题目要求关闭再开启才重置，这里按严格逻辑只提醒)
+            // 但管理员也可以通过先暂停再开启达到重置，我们提供明确指引
+            showToast("⚠️ 点歌台已是开启状态，如需重置限制请先【暂停】再【开启】", 2000);
+        }
+    }
+
+    function adminDisable() {
+        if (pointOpen) {
+            pointOpen = false;
+            localStorage.setItem(STORAGE_IS_OPEN, "false");
+            updateOpenCloseUI();
+            if (isAdminLogged) updateAdminButtonText();
+            showToast("🔇 点歌台已暂停，学生无法点歌", 1500);
+        } else {
+            showToast("点歌台已经是关闭状态", 1000);
+        }
+    }
+
+    // 背景管理 (扩展支持图片base64)
+    function changeBackgroundStyle(bgStyleString) {
+        if (!bgStyleString) return;
+        // 直接应用到body内联style，同时存储
+        document.body.style.background = bgStyleString;
+        document.body.style.backgroundSize = "cover";
+        document.body.style.backgroundPosition = "center center";
+        document.body.style.backgroundAttachment = "fixed";
+        localStorage.setItem(STORAGE_BG_STYLE, bgStyleString);
+    }
+
+    // 加载已存储背景
+    function loadBackgroundStyle() {
+        let savedBg = localStorage.getItem(STORAGE_BG_STYLE);
+        if (savedBg) {
+            document.body.style.background = savedBg;
+            document.body.style.backgroundSize = "cover";
+            document.body.style.backgroundPosition = "center center";
+            document.body.style.backgroundAttachment = "fixed";
+            // 如果背景是纯色，颜色选择器同步值（如果是颜色值）
+            if (savedBg.startsWith('#')) {
+                bgColorPicker.value = savedBg;
+            }
+        } else {
+            const defaultGradient = "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
+            document.body.style.background = defaultGradient;
+            localStorage.setItem(STORAGE_BG_STYLE, defaultGradient);
+        }
+    }
+
+    // 重置为默认渐变背景
+    function resetBackground() {
+        const defaultBg = "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
+        changeBackgroundStyle(defaultBg);
+        showToast("背景已重置为默认渐变风格", 1200);
+    }
+
+    // 上传图片并转为背景 (base64)
+    function handleImageBackground(file) {
+        if (!file) {
+            showToast("请先选择图片文件", 1000);
+            return;
+        }
+        const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
+        if (!validTypes.includes(file.type)) {
+            showToast("只支持 JPG/PNG/WEBP 格式图片", 1500);
+            return;
+        }
+        const maxSize = 2 * 1024 * 1024; // 2MB
+        if (file.size > maxSize) {
+            showToast("图片超过2MB，请压缩后上传，避免存储过大", 2500);
+            // 但依然允许，只警告，不强制拒绝
+        }
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const base64 = e.target.result;
+            // 构建背景样式，cover固定平铺
+            const bgStyle = `url(${base64}) no-repeat center center / cover fixed`;
+            changeBackgroundStyle(bgStyle);
+            showToast("背景图片已应用！", 1500);
+        };
+        reader.onerror = function() {
+            showToast("图片读取失败", 1000);
+        };
+        reader.readAsDataURL(file);
+    }
+
+    // 发送点歌POST
+    async function sendSongRequest(song, singer) {
+        const payload = {
+            song: song.trim(),
+            singer: singer.trim(),
+            timestamp: new Date().toISOString(),
+            deviceAgent: navigator.userAgent.substring(0, 60)
+        };
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            return response.ok;
+        } catch (err) {
+            console.error(err);
+            return false;
+        }
+    }
+
+    // 点歌主逻辑
+    async function handlePointSong() {
+        if (!pointOpen) {
+            showToast("⛔ 点歌台暂停点歌，暂时无法点歌~", 2000);
+            return;
+        }
+        if (hasDevicePostedInThisRound()) {
+            showToast("📵 您的设备在本轮点歌台中已经点过一首歌啦！等待下次开启可再点~", 2800);
+            return;
+        }
+        let songVal = songInput.value.trim();
+        let singerVal = singerInput.value.trim();
+        if (songVal === "" || singerVal === "") {
+            showToast("🎤 请完整填写歌曲名和歌手～", 1500);
+            return;
+        }
+        pointBtn.disabled = true;
+        pointBtn.innerText = "📡 发送祝福中...";
+        const success = await sendSongRequest(songVal, singerVal);
+        if (success) {
+            setDevicePosted();
+            showToast(`🎉 点歌成功！《${songVal}》- ${singerVal} 已送至广播站`, 2500);
+            songInput.value = "";
+            singerInput.value = "";
+        } else {
+            showToast("❌ 点歌失败，请检查网络或稍后重试", 2000);
+        }
+        pointBtn.disabled = false;
+        pointBtn.innerText = "✨ 点 歌 ✨";
+    }
+
+    // 管理员登录验证
+    function adminLogin() {
+        const acc = prompt("请输入管理员账号:");
+        if (acc !== "cstv001") { showToast("账号错误", 1000); return false; }
+        const pwd = prompt("请输入管理员密码:");
+        if (pwd !== "pncsgbznb") { showToast("密码错误", 1000); return false; }
+        isAdminLogged = true;
+        showToast("管理员登录成功！", 1500);
+        renderAdminPanel(true);
+        updateAdminButtonText();
+        return true;
+    }
+
+    function adminLogout() {
+        isAdminLogged = false;
+        renderAdminPanel(false);
+        showToast("已退出管理员模式", 1200);
+    }
+
+    function renderAdminPanel(show) {
+        if (show && isAdminLogged) {
+            adminPanelWrapper.style.display = "block";
+        } else {
+            adminPanelWrapper.style.display = "none";
+        }
+    }
+
+    function updateAdminButtonText() {
+        if (isAdminLogged && adminPanelWrapper.style.display === "block") {
+            if (pointOpen) {
+                togglePointStatusBtn.innerHTML = "⏸️ 暂停点歌台";
+            } else {
+                togglePointStatusBtn.innerHTML = "▶️ 开启点歌台 (重置限制)";
+            }
+        }
+    }
+
+    function onTogglePointStatus() {
+        if (!isAdminLogged) {
+            showToast("请先登录管理员账号", 1000);
+            return;
+        }
+        if (pointOpen) {
+            adminDisable();
+        } else {
+            adminEnableAndReset();
+        }
+        updateAdminButtonText();
+    }
+
+    // 初始化全局状态
+    function initGlobalState() {
+        let storedOpen = localStorage.getItem(STORAGE_IS_OPEN);
+        if (storedOpen === null) {
+            pointOpen = true;
+            localStorage.setItem(STORAGE_IS_OPEN, "true");
+        } else {
+            pointOpen = storedOpen === "true";
+        }
+        let storedRound = localStorage.getItem(STORAGE_ROUND_ID);
+        if (!storedRound) {
+            currentRoundId = generateRoundId();
+            localStorage.setItem(STORAGE_ROUND_ID, currentRoundId);
+        } else {
+            currentRoundId = storedRound;
+        }
+        updateOpenCloseUI();
+        syncDevicePermissionByRound();
+        loadBackgroundStyle();
+    }
+
+    // 监听跨标签变更
+    window.addEventListener('storage', (e) => {
+        if (e.key === STORAGE_IS_OPEN) {
+            pointOpen = e.newValue === "true";
+            updateOpenCloseUI();
+            if (isAdminLogged) updateAdminButtonText();
+        }
+        if (e.key === STORAGE_ROUND_ID && e.newValue) {
+            currentRoundId = e.newValue;
+            syncDevicePermissionByRound();
+            showToast("点歌台轮次已更新，点歌限制已重置", 1500);
+        }
+        if (e.key === STORAGE_BG_STYLE && e.newValue) {
+            document.body.style.background = e.newValue;
+            document.body.style.backgroundSize = "cover";
+            document.body.style.backgroundAttachment = "fixed";
+        }
+    });
+
+    // 绑定事件和初始化
+    window.addEventListener('load', () => {
+        initGlobalState();
+
+        pointBtn.addEventListener('click', handlePointSong);
+
+        adminToggleBtn.addEventListener('click', () => {
+            if (!isAdminLogged) adminLogin();
+            else showToast("已是管理员状态，如需退出请点击【退出管理】", 1500);
+        });
+        adminLogoutBtn.addEventListener('click', () => {
+            if (isAdminLogged) adminLogout();
+        });
+        togglePointStatusBtn.addEventListener('click', onTogglePointStatus);
+
+        applyBgColorBtn.addEventListener('click', () => {
+            if (!isAdminLogged) { showToast("请先登录管理员", 1000); return; }
+            let colorVal = bgColorPicker.value;
+            changeBackgroundStyle(colorVal);
+            showToast(`背景已更改为纯色`, 1000);
+        });
+        resetBgBtn.addEventListener('click', () => {
+            if (!isAdminLogged) { showToast("请先登录管理员", 1000); return; }
+            resetBackground();
+        });
+        // 上传图片逻辑
+        uploadBgImageBtn.addEventListener('click', () => {
+            if (!isAdminLogged) { showToast("请先登录管理员", 1000); return; }
+            const file = bgImageUpload.files[0];
+            if (!file) {
+                showToast("请选择图片文件", 800);
+                return;
+            }
+            handleImageBackground(file);
+        });
+
+        renderAdminPanel(false);
+        updateAdminButtonText();
+
+        // 定期同步round（以防其他标签修改）
+        setInterval(() => {
+            let freshRound = localStorage.getItem(STORAGE_ROUND_ID);
+            if (freshRound && freshRound !== currentRoundId) {
+                currentRoundId = freshRound;
+                syncDevicePermissionByRound();
+            }
+            let freshOpen = localStorage.getItem(STORAGE_IS_OPEN) === "true";
+            if (freshOpen !== pointOpen) {
+                pointOpen = freshOpen;
+                updateOpenCloseUI();
+                if (isAdminLogged) updateAdminButtonText();
+            }
+        }, 1200);
+    });
+</script>
+</body>
+</html>
